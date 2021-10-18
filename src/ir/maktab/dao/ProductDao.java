@@ -1,9 +1,11 @@
 package ir.maktab.dao;
 
 import ir.maktab.model.Product;
+import ir.maktab.model.enumeration.ProductType;
 
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductDao extends Dao {
 
@@ -22,5 +24,21 @@ public class ProductDao extends Dao {
             }
         }
         return null;
+    }
+
+    public List<Product> findAllProduct() throws SQLException {
+        PreparedStatement statement = getConnection().prepareStatement("select * from products");
+        ResultSet resultSet = statement.executeQuery();
+        List<Product> products = new ArrayList<>();
+        while (resultSet.next()) {
+            Integer id = resultSet.getInt("id");
+            String productType = resultSet.getString("product_type");
+            String productName = resultSet.getString("name");
+            Long price = resultSet.getLong("price");
+            Integer count = resultSet.getInt("count");
+            Product product = new Product(id, ProductType.getVal(productType), productName, price, count);
+            products.add(product);
+        }
+        return products;
     }
 }
