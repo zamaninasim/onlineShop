@@ -14,7 +14,7 @@ public enum ProductType {
         this.name = name;
     }
 
-    public ProductType getVal(String name) {
+    public static ProductType getVal(String name) {
         for (ProductType productType : values()) {
             if (productType.name.equalsIgnoreCase(name.trim())) {
                 return productType;
