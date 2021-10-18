@@ -7,6 +7,8 @@ import ir.maktab.model.Product;
 import ir.maktab.model.User;
 import ir.maktab.model.enumeration.Gender;
 import ir.maktab.model.enumeration.ProductType;
+import ir.maktab.service.ProductService;
+import ir.maktab.service.UserService;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -17,6 +19,8 @@ public class Main {
     static Manager manager;
     static ProductDao productDao;
     static UserDao userDao;
+    static ProductService productService;
+    static UserService userService;
 
     public Main() throws SQLException, ClassNotFoundException {
     }
@@ -25,6 +29,8 @@ public class Main {
         productDao = new ProductDao();
         manager = new Manager();
         userDao = new UserDao();
+        userService = new UserService();
+        productService = new ProductService();
         System.out.println("Choose your role : 1)manager 2)user");
         Integer choice = input.nextInt();
         switch (choice) {
@@ -47,34 +53,28 @@ public class Main {
                 } while (!repeat);
                 break;
             case 2:
-                System.out.println("1)sign in 2)sign up");
-                Integer choice1 = input.nextInt();
-                switch (choice1) {
-                    case 1 :
-                        System.out.println("enter your phone number:");
-                        String username = input.next();
-                        //if (phoneNumber.equals())
-                    case 2:
-                        System.out.println("enter your info :fullName,phoneNumber,email,gender,birthDate,nationalId");
-                        String information = input.next();
-                        addUser(information);
+                System.out.println("enter your phone number:");
+                String username = input.next();
+                Boolean usernameExist = userService.isUserExist(username);
+                if (usernameExist) {
+                    System.out.println("you have an account");
+                } else {
+                    System.out.println("enter your info :fullName,email,gender,birthDate,nationalId");
+                    String information = input.next();
+                    addUser(information,username);
                 }
-            default:
-                System.out.println("");
-
         }
 
     }
 
-    private static void addUser(String information) throws SQLException {
-        String[] arrOfInfo = information.split(",", 6);
+    private static void addUser(String information,String phoneNumber) throws SQLException {
+        String[] arrOfInfo = information.split(",", 5);
         String fullName = arrOfInfo[0];
-        String phoneNumber = arrOfInfo[1];
-        String email =arrOfInfo[2];
-        Gender gender = Gender.getVal(arrOfInfo[3].toUpperCase());
-        Date birthDate=Date.valueOf(arrOfInfo[4]);
-        String nationalId = arrOfInfo[5];
-        User user = new User(fullName,phoneNumber,email,gender,birthDate,nationalId);
+        String email = arrOfInfo[1];
+        Gender gender = Gender.getVal(arrOfInfo[2].toUpperCase());
+        Date birthDate = Date.valueOf(arrOfInfo[3]);
+        String nationalId = arrOfInfo[4];
+        User user = new User(fullName, phoneNumber, email, gender, birthDate, nationalId);
         System.out.println(userDao.save(user));
     }
 

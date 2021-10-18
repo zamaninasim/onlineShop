@@ -9,7 +9,7 @@ public class UserDao extends Dao {
     public UserDao() throws ClassNotFoundException, SQLException {
     }
 
-    public void save(User user) throws SQLException {
+    public String save(User user) throws SQLException {
         if (getConnection() != null) {
             Statement statement = getConnection().createStatement();
             String sqlQuary = String.format("INSERT INTO users (full_name,phone_number,email,gender,birth_date,national_id)" +
@@ -17,8 +17,9 @@ public class UserDao extends Dao {
                     user.getGender(), user.getBirthDate(), user.getNationalId());
             int i = statement.executeUpdate(sqlQuary);
             if (i == 1) {
-                System.out.println("user Information was recorded");
+                return "user Information was recorded";
             }
         }
+        return null;
     }
 }

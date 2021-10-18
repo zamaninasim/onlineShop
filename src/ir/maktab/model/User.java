@@ -14,4 +14,13 @@ public class User {
     private Gender gender;
     private Date birthDate;
     private String nationalId;
+
+    public User(String fullName, String phoneNumber, String email, Gender gender, Date birthDate, String nationalId) {
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.nationalId = nationalId;
+    }
 }
