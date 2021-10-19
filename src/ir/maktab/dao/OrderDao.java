@@ -112,5 +112,22 @@ public class OrderDao extends Dao {
             deleteOrder.executeUpdate();
         }
     }
+
+    public List<Long> calculateFinalPriceOfUserOrders(Integer userId) throws SQLException, ClassNotFoundException {
+        String sqlQuery = "select * from orders WHERE user_id_fk = ? AND order_status = 'RESERVED'";
+        PreparedStatement foundedProduct = getConnection().prepareStatement(sqlQuery);
+        foundedProduct.setInt(1, userId);
+        ResultSet resultSet = foundedProduct.executeQuery();
+        List<Long> prices = new ArrayList<>();
+        while (resultSet.next()) {
+            Integer productId = resultSet.getInt("product_id_fk");
+            Integer count = resultSet.getInt("count");
+            productDao = new ProductDao();
+            Product product = productDao.findProductById(productId);
+            Long price = product.getPrice()*count;
+            prices.add(price);
+        }
+        return prices;
+    }
 }
 

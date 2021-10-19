@@ -100,14 +100,28 @@ public class Main {
                     System.out.println("**************************************************");
                     break;
                 case 4:
+                    finalCartItemsPrice(phoneNumber);
                     break;
                 case 5:
+
                     break;
                 case 6:
                     exite = true;
                     break;
             }
         } while (!exite);
+    }
+
+    private static void finalCartItemsPrice(String phoneNumber) throws SQLException, ClassNotFoundException {
+        User user1 =userDao.findUserByPhoneNumber(phoneNumber);
+        Integer userId1 = user1.getId();
+        List<Long> prices = orderDao.calculateFinalPriceOfUserOrders(userId1);
+        Long[] price = prices.toArray(new Long[0]);
+        int sum=0;
+        for (Long eachPrice: price) {
+            sum+=eachPrice;
+        }
+        System.out.println("The price of shopping cart items = "+sum);
     }
 
     private static void deleteProductFromCart(String phoneNumber) throws SQLException, ClassNotFoundException {
