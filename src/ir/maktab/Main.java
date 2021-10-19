@@ -93,6 +93,11 @@ public class Main {
                     deleteProductFromCart(phoneNumber);
                     break;
                 case 3:
+                    User user =userDao.findUserByPhoneNumber(phoneNumber);
+                    Integer userId = user.getId();
+                    List<Order> orders = orderDao.findRezervedOrderOfUser(userId);
+                    System.out.println(orders);
+                    System.out.println("**************************************************");
                     break;
                 case 4:
                     break;
