@@ -103,6 +103,19 @@ public class Main {
                     finalCartItemsPrice(phoneNumber);
                     break;
                 case 5:
+                    System.out.println("Do you want to finalize the purchase? 1)yes 2)no");
+                    Integer choice1 = input.nextInt();
+                    switch (choice1){
+                        case 1:
+                            User user1 = userDao.findUserByPhoneNumber(phoneNumber);
+                            Integer userId1 = user1.getId();
+                            finalCartItemsPrice(phoneNumber);
+                            orderDao.updateOrderStatus(userId1);
+                            System.out.println("Your request has been submitted.");
+                            break;
+                        case 2:
+                            break;
+                    }
 
                     break;
                 case 6:

@@ -67,7 +67,7 @@ public class OrderDao extends Dao {
         return true;
     }
 
-    public boolean isThisUserOrderedThisProduct(Integer userId , Integer productId) throws SQLException {
+    public boolean isThisUserOrderedThisProduct(Integer userId, Integer productId) throws SQLException {
         String sqlQuery = "SELECT user_id_fk FROM orders  WHERE user_id_fk = ? AND product_id_fk=?";
         PreparedStatement findID = getConnection().prepareStatement(sqlQuery);
         findID.setInt(1, userId);
@@ -79,7 +79,7 @@ public class OrderDao extends Dao {
         return true;
     }
 
-    public void updateOrderCount(Integer userId,Integer productId, Integer newCount) throws SQLException {
+    public void updateOrderCount(Integer userId, Integer productId, Integer newCount) throws SQLException {
         if (getConnection() != null) {
             String sQlQuary = "UPDATE orders SET count = ? WHERE user_id_fk = ? AND  product_id_fk= ? AND order_status = 'RESERVED'";
             PreparedStatement updateCount = getConnection().prepareStatement(sQlQuary);
@@ -90,7 +90,7 @@ public class OrderDao extends Dao {
         }
     }
 
-    public Integer ordereCount(Integer userId , Integer productId) throws SQLException {
+    public Integer ordereCount(Integer userId, Integer productId) throws SQLException {
         String sqlQuery = "SELECT count FROM orders  WHERE user_id_fk = ? AND product_id_fk=?";
         PreparedStatement findID = getConnection().prepareStatement(sqlQuery);
         findID.setInt(1, userId);
@@ -103,7 +103,7 @@ public class OrderDao extends Dao {
         return 0;
     }
 
-    public void deleteOrderOfUser(Integer userId,Integer productId) throws SQLException {
+    public void deleteOrderOfUser(Integer userId, Integer productId) throws SQLException {
         if (getConnection() != null) {
             String sQlQuary = "DELETE  FROM orders WHERE user_id_fk = ? AND  product_id_fk= ? AND order_status = 'RESERVED'";
             PreparedStatement deleteOrder = getConnection().prepareStatement(sQlQuary);
@@ -124,10 +124,19 @@ public class OrderDao extends Dao {
             Integer count = resultSet.getInt("count");
             productDao = new ProductDao();
             Product product = productDao.findProductById(productId);
-            Long price = product.getPrice()*count;
+            Long price = product.getPrice() * count;
             prices.add(price);
         }
         return prices;
+    }
+
+    public void updateOrderStatus(Integer userId) throws SQLException {
+        if (getConnection() != null) {
+            String sQlQuary = "UPDATE orders SET order_status = 'PAID' WHERE user_id_fk = ? AND order_status = 'RESERVED'";
+            PreparedStatement updateCount = getConnection().prepareStatement(sQlQuary);
+            updateCount.setInt(1, userId);
+            updateCount.executeUpdate();
+        }
     }
 }
 
