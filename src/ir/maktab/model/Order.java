@@ -21,10 +21,10 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", user=" + user +
-                ", product=" + product +
+        return "{" +
+                "order Id=" + id +
+                ", user Id=" + user.getId() +
+                ", product Id=" + product.getId() +
                 ", count=" + count +
                 ", orderStatus=" + orderStatus +
                 "}\n";

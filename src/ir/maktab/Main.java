@@ -78,46 +78,43 @@ public class Main {
     }
 
     private static void userActions(String phoneNumber) throws SQLException, ClassNotFoundException {
-        System.out.println("product list");
-        System.out.println(productService.showAllProduct());
-        System.out.println("1)add product to your cart \n2)delete product from your cart " +
-                "\n3)View Cart Products \n4)view Cart item prices \n5)Final purchase confirmation");
-        Integer choice = input.nextInt();
-        switch (choice) {
-            case 1:
-                addProductToCart(phoneNumber);
-                break;
-            case 2:
-        }
-
+        Boolean exite = false;
+        do {
+            System.out.println("product list");
+            System.out.println(productService.showAllProduct());
+            System.out.println("1)add product to your cart \n2)delete product from your cart " +
+                    "\n3)View Cart Products \n4)view Cart item prices \n5)Final purchase confirmation \n6)Exit");
+            Integer choice = input.nextInt();
+            switch (choice) {
+                case 1:
+                    addProductToCart(phoneNumber);
+                    break;
+                case 2:
+                    deleteProductFromCart(phoneNumber);
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    exite = true;
+                    break;
+            }
+        } while (!exite);
     }
 
-//    private static void deleteProductFromCart(String phoneNumber) throws SQLException, ClassNotFoundException {
-//        System.out.println("your orders:");
-//        User user = userDao.findUserByPhoneNumber(phoneNumber);
-//        Integer userId = user.getId();
-//        Set<Order> orders = orderDao.findRezervedOrderOfUser(userId);
-//        System.out.println(orders);
-//        System.out.println("Enter the product ID to delete from your cart:");
-//        Integer productId = input.nextInt();
-//        System.out.println("Enter the number you want to delete:");
-//        Integer numberOfProductOrder = input.nextInt();
-//        User user = userDao.findUserByPhoneNumber(phoneNumber);
-//        Integer userId = user.getId();
-//        Product product = productDao.findProductById(productId);
-//        Integer productCount = product.getCount();
-//        Set<Order> orders = orderDao.findRezervedOrderOfUser(userId);
-//        int numberOfOrders = orders.size();
-//        if (numberOfProductOrder <= product.getCount() && numberOfOrders < 5) {
-//            Integer newCount = productCount - numberOfOrders;
-//            productDao.updateProductCount(productId, newCount);
-//            OrderStatus orderStatus = OrderStatus.RESERVED;
-//            Order order = new Order(user, product, numberOfProductOrder, orderStatus);
-//            orderDao.save(order);
-//        }else {
-//            System.out.println("You can not select this product.");
-//        }
-//    }
+    private static void deleteProductFromCart(String phoneNumber) throws SQLException, ClassNotFoundException {
+        System.out.println("your orders:");
+        User user = userDao.findUserByPhoneNumber(phoneNumber);
+        Integer userId = user.getId();
+        List<Order> orders = orderDao.findRezervedOrderOfUser(userId);
+        System.out.println(orders);
+        System.out.println("Enter the product ID to delete from your cart:");
+        Integer productId = input.nextInt();
+        orderDao.deleteOrderOfUser(userId, productId);
+    }
 
     private static void addProductToCart(String phoneNumber) throws SQLException, ClassNotFoundException {
         System.out.println("Enter the product ID to add to your cart:");
@@ -130,8 +127,8 @@ public class Main {
         Integer productCount = product.getCount();
         Boolean addToExistOrder = orderDao.isThisUserOrderedThisProduct(userId, productId);
         if (addToExistOrder) {
-            Integer newOrderCount =(orderDao.ordereCount(userId,productId))+numberOfProductOrder;
-            orderDao.updateOrderCount(userId,productId,newOrderCount);
+            Integer newOrderCount = (orderDao.ordereCount(userId, productId)) + numberOfProductOrder;
+            orderDao.updateOrderCount(userId, productId, newOrderCount);
             Integer newCount = productCount - numberOfProductOrder;
             productDao.updateProductCount(productId, newCount);
         } else {

@@ -103,5 +103,14 @@ public class OrderDao extends Dao {
         return 0;
     }
 
+    public void deleteOrderOfUser(Integer userId,Integer productId) throws SQLException {
+        if (getConnection() != null) {
+            String sQlQuary = "DELETE  FROM orders WHERE user_id_fk = ? AND  product_id_fk= ? AND order_status = 'RESERVED'";
+            PreparedStatement deleteOrder = getConnection().prepareStatement(sQlQuary);
+            deleteOrder.setInt(1, userId);
+            deleteOrder.setInt(2, productId);
+            deleteOrder.executeUpdate();
+        }
+    }
 }
 
