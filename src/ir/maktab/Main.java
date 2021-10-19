@@ -93,29 +93,13 @@ public class Main {
                     deleteProductFromCart(phoneNumber);
                     break;
                 case 3:
-                    User user =userDao.findUserByPhoneNumber(phoneNumber);
-                    Integer userId = user.getId();
-                    List<Order> orders = orderDao.findRezervedOrderOfUser(userId);
-                    System.out.println(orders);
-                    System.out.println("**************************************************");
+                    showAllCartsItems(phoneNumber);
                     break;
                 case 4:
                     finalCartItemsPrice(phoneNumber);
                     break;
                 case 5:
-                    System.out.println("Do you want to finalize the purchase? 1)yes 2)no");
-                    Integer choice1 = input.nextInt();
-                    switch (choice1){
-                        case 1:
-                            User user1 = userDao.findUserByPhoneNumber(phoneNumber);
-                            Integer userId1 = user1.getId();
-                            finalCartItemsPrice(phoneNumber);
-                            orderDao.updateOrderStatus(userId1);
-                            System.out.println("Your request has been submitted.");
-                            break;
-                        case 2:
-                            break;
-                    }
+                    finalizeThePurchese(phoneNumber);
 
                     break;
                 case 6:
@@ -123,6 +107,30 @@ public class Main {
                     break;
             }
         } while (!exite);
+    }
+
+    private static void showAllCartsItems(String phoneNumber) throws SQLException, ClassNotFoundException {
+        User user =userDao.findUserByPhoneNumber(phoneNumber);
+        Integer userId = user.getId();
+        List<Order> orders = orderDao.findRezervedOrderOfUser(userId);
+        System.out.println(orders);
+        System.out.println("**************************************************");
+    }
+
+    private static void finalizeThePurchese(String phoneNumber) throws SQLException, ClassNotFoundException {
+        System.out.println("Do you want to finalize the purchase? 1)yes 2)no");
+        Integer choice1 = input.nextInt();
+        switch (choice1){
+            case 1:
+                User user1 = userDao.findUserByPhoneNumber(phoneNumber);
+                Integer userId1 = user1.getId();
+                finalCartItemsPrice(phoneNumber);
+                orderDao.updateOrderStatus(userId1);
+                System.out.println("Your request has been submitted.");
+                break;
+            case 2:
+                break;
+        }
     }
 
     private static void finalCartItemsPrice(String phoneNumber) throws SQLException, ClassNotFoundException {
