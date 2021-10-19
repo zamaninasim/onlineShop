@@ -16,6 +16,7 @@ import ir.maktab.service.UserService;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -84,27 +85,71 @@ public class Main {
         Integer choice = input.nextInt();
         switch (choice) {
             case 1:
-                System.out.println("Enter the product ID to add to your cart:");
-                Integer productId = input.nextInt();
-                System.out.println("Enter the number you want:");
-                Integer count = input.nextInt();
-                User user = userDao.findUserByPhoneNumber(phoneNumber);
-                Integer userId=user.getId();
-                Product product =productDao.findProductById(productId);
-                Set<Order> orders = orderDao.findRezervedOrderOfUser(userId);
-                int numberOfOrders = orders.size();
-                if(count<= product.getCount() && numberOfOrders<6){
-                    OrderStatus orderStatus = OrderStatus.RESERVED;
-                    Order order = new Order(user,product,count,orderStatus);
-                    orderDao.save(order);
-                }else {
-                    System.out.println("You can not select this product.");
-                }
-
-
-
+                addProductToCart(phoneNumber);
+                break;
+            case 2:
         }
 
+    }
+
+//    private static void deleteProductFromCart(String phoneNumber) throws SQLException, ClassNotFoundException {
+//        System.out.println("your orders:");
+//        User user = userDao.findUserByPhoneNumber(phoneNumber);
+//        Integer userId = user.getId();
+//        Set<Order> orders = orderDao.findRezervedOrderOfUser(userId);
+//        System.out.println(orders);
+//        System.out.println("Enter the product ID to delete from your cart:");
+//        Integer productId = input.nextInt();
+//        System.out.println("Enter the number you want to delete:");
+//        Integer numberOfProductOrder = input.nextInt();
+//        User user = userDao.findUserByPhoneNumber(phoneNumber);
+//        Integer userId = user.getId();
+//        Product product = productDao.findProductById(productId);
+//        Integer productCount = product.getCount();
+//        Set<Order> orders = orderDao.findRezervedOrderOfUser(userId);
+//        int numberOfOrders = orders.size();
+//        if (numberOfProductOrder <= product.getCount() && numberOfOrders < 5) {
+//            Integer newCount = productCount - numberOfOrders;
+//            productDao.updateProductCount(productId, newCount);
+//            OrderStatus orderStatus = OrderStatus.RESERVED;
+//            Order order = new Order(user, product, numberOfProductOrder, orderStatus);
+//            orderDao.save(order);
+//        }else {
+//            System.out.println("You can not select this product.");
+//        }
+//    }
+
+    private static void addProductToCart(String phoneNumber) throws SQLException, ClassNotFoundException {
+        System.out.println("Enter the product ID to add to your cart:");
+        Integer productId = input.nextInt();
+        System.out.println("Enter the number you want:");
+        Integer numberOfProductOrder = input.nextInt();
+        User user = userDao.findUserByPhoneNumber(phoneNumber);
+        Integer userId = user.getId();
+        Product product = productDao.findProductById(productId);
+        Integer productCount = product.getCount();
+        Boolean addToExistOrder = orderDao.isThisUserOrderedThisProduct(userId, productId);
+        if (addToExistOrder) {
+            Integer newOrderCount =(orderDao.ordereCount(userId,productId))+numberOfProductOrder;
+            orderDao.updateOrderCount(userId,productId,newOrderCount);
+            Integer newCount = productCount - numberOfProductOrder;
+            productDao.updateProductCount(productId, newCount);
+        } else {
+            int numberOfOrders = 0;
+            if (orderDao.isUserHaveOrdere(userId)) {
+                List<Order> orders = orderDao.findRezervedOrderOfUser(userId);
+                numberOfOrders = orders.size();
+            }
+            if (numberOfProductOrder <= productCount && numberOfOrders < 5) {
+                Integer newCount = productCount - numberOfProductOrder;
+                productDao.updateProductCount(productId, newCount);
+                OrderStatus orderStatus = OrderStatus.RESERVED;
+                Order order = new Order(user, product, numberOfProductOrder, orderStatus);
+                orderDao.save(order);
+            } else {
+                System.out.println("You can not select this product.");
+            }
+        }
     }
 
     private static void addUser(String information, String phoneNumber) throws SQLException {

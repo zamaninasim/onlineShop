@@ -9,12 +9,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class OrderDao extends Dao {
     static UserDao userDao;
     static ProductDao productDao;
+
     public OrderDao() throws ClassNotFoundException, SQLException {
     }
 
@@ -32,12 +35,12 @@ public class OrderDao extends Dao {
         return null;
     }
 
-    public Set<Order> findRezervedOrderOfUser(Integer userId) throws SQLException, ClassNotFoundException {
-        String sqlQuery = "select * from orders WHERE user_id_fk = ? AND order_status = RESERVED";
+    public List<Order> findRezervedOrderOfUser(Integer userId) throws SQLException, ClassNotFoundException {
+        String sqlQuery = "select * from orders WHERE user_id_fk = ? AND order_status = 'RESERVED'";
         PreparedStatement foundedProduct = getConnection().prepareStatement(sqlQuery);
         foundedProduct.setInt(1, userId);
         ResultSet resultSet = foundedProduct.executeQuery();
-        Set<Order> orders = new HashSet<>();
+        List<Order> orders = new ArrayList<>();
         while (resultSet.next()) {
             Integer id = resultSet.getInt("id");
             Integer productId = resultSet.getInt("product_id_fk");
@@ -47,9 +50,58 @@ public class OrderDao extends Dao {
             User user = userDao.findUserById(userId);
             productDao = new ProductDao();
             Product product = productDao.findProductById(productId);
-            Order order = new Order(id,user,product,count, OrderStatus.getVal(orderStatus));
+            Order order = new Order(id, user, product, count, OrderStatus.getVal(orderStatus));
             orders.add(order);
         }
         return orders;
     }
+
+    public boolean isUserHaveOrdere(Integer userId) throws SQLException {
+        String sqlQuery = "SELECT user_id_fk FROM orders  WHERE user_id_fk = ?";
+        PreparedStatement findID = getConnection().prepareStatement(sqlQuery);
+        findID.setInt(1, userId);
+        ResultSet resultSet = findID.executeQuery();
+        if (!resultSet.next()) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isThisUserOrderedThisProduct(Integer userId , Integer productId) throws SQLException {
+        String sqlQuery = "SELECT user_id_fk FROM orders  WHERE user_id_fk = ? AND product_id_fk=?";
+        PreparedStatement findID = getConnection().prepareStatement(sqlQuery);
+        findID.setInt(1, userId);
+        findID.setInt(2, productId);
+        ResultSet resultSet = findID.executeQuery();
+        if (!resultSet.next()) {
+            return false;
+        }
+        return true;
+    }
+
+    public void updateOrderCount(Integer userId,Integer productId, Integer newCount) throws SQLException {
+        if (getConnection() != null) {
+            String sQlQuary = "UPDATE orders SET count = ? WHERE user_id_fk = ? AND  product_id_fk= ? AND order_status = 'RESERVED'";
+            PreparedStatement updateCount = getConnection().prepareStatement(sQlQuary);
+            updateCount.setInt(1, newCount);
+            updateCount.setInt(2, userId);
+            updateCount.setInt(3, productId);
+            updateCount.executeUpdate();
+        }
+    }
+
+    public Integer ordereCount(Integer userId , Integer productId) throws SQLException {
+        String sqlQuery = "SELECT count FROM orders  WHERE user_id_fk = ? AND product_id_fk=?";
+        PreparedStatement findID = getConnection().prepareStatement(sqlQuery);
+        findID.setInt(1, userId);
+        findID.setInt(2, productId);
+        ResultSet resultSet = findID.executeQuery();
+        while (resultSet.next()) {
+            Integer count = resultSet.getInt("count");
+            return count;
+        }
+        return 0;
+    }
+
 }
+
