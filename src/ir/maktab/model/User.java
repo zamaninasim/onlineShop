@@ -1,10 +1,11 @@
 package ir.maktab.model;
 
 import ir.maktab.model.enumeration.Gender;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.sql.Date;
-
+@AllArgsConstructor
 @Data
 public class User {
     private Integer id;

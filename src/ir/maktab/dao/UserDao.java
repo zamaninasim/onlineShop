@@ -1,9 +1,11 @@
 package ir.maktab.dao;
 
 import ir.maktab.model.User;
+import ir.maktab.model.enumeration.Gender;
 
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDao extends Dao {
     public UserDao() throws ClassNotFoundException, SQLException {
@@ -19,6 +21,42 @@ public class UserDao extends Dao {
             if (i == 1) {
                 return "user Information was recorded";
             }
+        }
+        return null;
+    }
+
+    public User findUserByPhoneNumber(String phoneNumber) throws SQLException {
+        String sqlQuery = "select * from users WHERE phone_number = ?";
+        PreparedStatement foundedUser = getConnection().prepareStatement(sqlQuery);
+        foundedUser.setString(1, phoneNumber);
+        ResultSet resultSet = foundedUser.executeQuery();
+        while (resultSet.next()) {
+            int id = resultSet.getInt("id");
+            String fullName = resultSet.getString("full_name");
+            String email = resultSet.getString("email");
+            String gender = resultSet.getString("gender");
+            Date birthDate = resultSet.getDate("birth_date");
+            String nationalId = resultSet.getString("national_id");
+            User user = new User(id, fullName, phoneNumber, email, Gender.getVal(gender), birthDate, nationalId);
+            return user;
+        }
+        return null;
+    }
+
+    public User findUserById(Integer id) throws SQLException {
+        String sqlQuery = "select * from users WHERE id = ?";
+        PreparedStatement foundedUser = getConnection().prepareStatement(sqlQuery);
+        foundedUser.setInt(1, id);
+        ResultSet resultSet = foundedUser.executeQuery();
+        while (resultSet.next()) {
+            String fullName = resultSet.getString("full_name");
+            String phoneNumber = resultSet.getString("phone_number");
+            String email = resultSet.getString("email");
+            String gender = resultSet.getString("gender");
+            Date birthDate = resultSet.getDate("birth_date");
+            String nationalId = resultSet.getString("national_id");
+            User user = new User(id, fullName, phoneNumber, email, Gender.getVal(gender), birthDate, nationalId);
+            return user;
         }
         return null;
     }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
 public class Product {
     private Integer id;
     private ProductType productType;
@@ -18,5 +19,16 @@ public class Product {
         this.name = name;
         this.price = price;
         this.count = count;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "Product id=" + id +
+                ", Product Type=" + productType +
+                ", Product Name='" + name +
+                ", price=" + price + " toman" +
+                ", Inventory=" + count +
+                "}\n";
     }
 }

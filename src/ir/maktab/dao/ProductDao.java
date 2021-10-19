@@ -1,6 +1,8 @@
 package ir.maktab.dao;
 
 import ir.maktab.model.Product;
+import ir.maktab.model.User;
+import ir.maktab.model.enumeration.Gender;
 import ir.maktab.model.enumeration.ProductType;
 
 import java.sql.*;
@@ -40,5 +42,21 @@ public class ProductDao extends Dao {
             products.add(product);
         }
         return products;
+    }
+
+    public Product findProductById(Integer id) throws SQLException {
+        String sqlQuery = "select * from products WHERE id = ?";
+        PreparedStatement foundedProduct = getConnection().prepareStatement(sqlQuery);
+        foundedProduct.setInt(1, id);
+        ResultSet resultSet = foundedProduct.executeQuery();
+        while (resultSet.next()) {
+            String productType = resultSet.getString("product_type");
+            String name = resultSet.getString("name");
+            Long price = resultSet.getLong("price");
+            Integer count = resultSet.getInt("count");
+            Product product = new Product(id,ProductType.getVal(productType),name,price,count);
+            return product;
+        }
+        return null;
     }
 }
