@@ -119,16 +119,17 @@ public class Main {
 
     private static void finalizeThePurchese(String phoneNumber) throws SQLException, ClassNotFoundException {
         System.out.println("Do you want to finalize the purchase? 1)yes 2)no");
-        Integer choice1 = input.nextInt();
-        switch (choice1){
+        Integer choice = input.nextInt();
+        switch (choice){
             case 1:
-                User user1 = userDao.findUserByPhoneNumber(phoneNumber);
-                Integer userId1 = user1.getId();
+                User user = userDao.findUserByPhoneNumber(phoneNumber);
+                Integer userId = user.getId();
                 finalCartItemsPrice(phoneNumber);
-                orderDao.updateOrderStatus(userId1);
+                orderDao.updateOrderStatus(userId);
                 System.out.println("Your request has been submitted.");
                 break;
             case 2:
+
                 break;
         }
     }
@@ -153,6 +154,10 @@ public class Main {
         System.out.println(orders);
         System.out.println("Enter the product ID to delete from your cart:");
         Integer productId = input.nextInt();
+        int countOfOrder = orderDao.ordereCount(userId,productId);
+        Product product=productDao.findProductById(productId);
+        Integer newCount = product.getCount() + countOfOrder;
+        productDao.updateProductCount(productId,newCount);
         orderDao.deleteOrderOfUser(userId, productId);
     }
 
